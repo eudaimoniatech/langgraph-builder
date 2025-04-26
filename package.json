@@ -2,7 +2,7 @@
   "name": "next-boilerplate-typescript-jest",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --port 3001",
     "build": "next build",
     "start": "next start",
     "export": "yarpm run build && next export",

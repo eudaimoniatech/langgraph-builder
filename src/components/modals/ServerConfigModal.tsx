@@ -25,7 +25,7 @@ export default function ServerConfigModal({
 
   // Reset all fields to defaults
   const handleReset = () => {
-    setLocalServerUrl('https://langgraph-gen-server-570601939772.us-central1.run.app');
+    setLocalServerUrl(process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:8001');
   };
 
   // Refresh templates from the server
@@ -47,7 +47,7 @@ export default function ServerConfigModal({
           />
           <button
             onClick={refreshTemplates}
-            className='px-3 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors'
+            className='px-3 py-2 text-gray-700 bg-gray-100 rounded-md transition-colors hover:bg-gray-200'
             title="Refresh templates"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -57,16 +57,16 @@ export default function ServerConfigModal({
         </div>
       </div>
       
-      <div className='bg-gray-50 p-3 rounded-md border border-gray-200'>
+      <div className='p-3 bg-gray-50 rounded-md border border-gray-200'>
         <p className='text-xs text-gray-600'>
           The server URL is used to generate code templates. It should point to an instance of the langgraph-gen server.
         </p>
       </div>
       
-      <div className='flex justify-end gap-2 mt-4'>
+      <div className='flex gap-2 justify-end mt-4'>
         <button
           onClick={handleReset}
-          className='px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors'
+          className='px-4 py-2 text-gray-700 bg-gray-100 rounded-md transition-colors hover:bg-gray-200'
         >
           Reset
         </button>

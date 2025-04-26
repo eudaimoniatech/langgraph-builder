@@ -50,7 +50,7 @@ type AvailableTemplates = {
 
 // Loading spinner component
 const LoadingSpinner = () => (
-  <div className='flex items-center justify-center'>
+  <div className='flex justify-center items-center'>
     <div className='w-12 h-12 border-4 border-[#2F6868] border-t-transparent rounded-full animate-spin'></div>
   </div>
 )
@@ -82,7 +82,7 @@ export default function App() {
   const [isConfigModalOpen, setIsConfigModalOpen] = useState(false)
   const [isServerConfigModalOpen, setIsServerConfigModalOpen] = useState(false)
   const [isTemplateConfigModalOpen, setIsTemplateConfigModalOpen] = useState(false)
-  const [serverUrl, setServerUrl] = useState<string>('https://langgraph-gen-server-570601939772.us-central1.run.app')
+  const [serverUrl, setServerUrl] = useState<string>(process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:8001')
   const [configValues, setConfigValues] = useState({
     name: 'CustomAgent',
     builder_name: 'builder',
@@ -915,11 +915,11 @@ export default function App() {
 
   return (
     <div className='w-screen h-screen'>
-      <div className='absolute top-5 left-5 z-50 flex gap-2'>
+      <div className='flex absolute top-5 left-5 z-50 gap-2'>
         <button
           onClick={() => initialOnboardingComplete && setIsTemplatesPanelOpen(!isTemplatesPanelOpen)}
           className={`flex items-center gap-2 px-3 py-2 bg-white rounded-lg shadow-md transition-shadow ${
-            !initialOnboardingComplete ? 'cursor-not-allowed opacity-70' : 'hover:shadow-lg'
+            !initialOnboardingComplete ? 'opacity-70 cursor-not-allowed' : 'hover:shadow-lg'
           }`}
           disabled={!initialOnboardingComplete}
         >
@@ -943,7 +943,7 @@ export default function App() {
 
         <label
           className={`flex items-center gap-2 px-3 py-2 bg-white rounded-lg shadow-md transition-shadow cursor-pointer ${
-            !initialOnboardingComplete ? 'cursor-not-allowed opacity-70' : 'hover:shadow-lg'
+            !initialOnboardingComplete ? 'opacity-70 cursor-not-allowed' : 'hover:shadow-lg'
           }`}
         >
           <input
@@ -1142,7 +1142,7 @@ export default function App() {
             downloadFile(spec, 'spec.yml')
           }}
           className={`flex items-center gap-2 px-3 py-2 bg-white rounded-lg shadow-md transition-shadow ${
-            !initialOnboardingComplete ? 'cursor-not-allowed opacity-70' : 'hover:shadow-lg'
+            !initialOnboardingComplete ? 'opacity-70 cursor-not-allowed' : 'hover:shadow-lg'
           }`}
           disabled={!initialOnboardingComplete}
         >
@@ -1185,7 +1185,7 @@ export default function App() {
             }
           }}
           className={`flex items-center gap-2 px-3 py-2 bg-white rounded-lg shadow-md transition-shadow ${
-            !initialOnboardingComplete ? 'cursor-not-allowed opacity-70' : 'hover:shadow-lg'
+            !initialOnboardingComplete ? 'opacity-70 cursor-not-allowed' : 'hover:shadow-lg'
           }`}
           disabled={!initialOnboardingComplete}
         >
@@ -1209,7 +1209,7 @@ export default function App() {
           Clear Graph
         </button>
       </div>
-      <div className='absolute top-5 right-5 z-50 flex gap-2'>
+      <div className='flex absolute top-5 right-5 z-50 gap-2'>
         <div className='flex flex-row gap-2'>
           <Tooltip
             title={!hasValidSourceToEndPath() && initialOnboardingComplete ? 'Create a valid graph to generate code' : ''}
@@ -1246,8 +1246,8 @@ export default function App() {
               aria-label='Templates Configuration'
               onClick={() => setIsTemplateConfigModalOpen(true)}
             >
-              <div className="flex items-center gap-2">
-                <Settings className='h-6 w-6' />
+              <div className="flex gap-2 items-center">
+                <Settings className='w-6 h-6' />
                 <span className="text-sm">Code</span>
               </div>
             </button>
@@ -1266,8 +1266,8 @@ export default function App() {
               aria-label='Server Configuration'
               onClick={() => setIsServerConfigModalOpen(true)}
             >
-              <div className="flex items-center gap-2">
-                <Settings className='h-6 w-6' />
+              <div className="flex gap-2 items-center">
+                <Settings className='w-6 h-6' />
                 <span className="text-sm">API</span>
               </div>
             </button>
@@ -1286,7 +1286,7 @@ export default function App() {
               aria-label='Graph Configuration'
               onClick={() => setIsConfigModalOpen(true)}
             >
-              <div className="flex items-center gap-2">
+              <div className="flex gap-2 items-center">
                 <svg
                   xmlns='http://www.w3.org/2000/svg'
                   width='24'
@@ -1319,7 +1319,7 @@ export default function App() {
               aria-label='Toggle Information Panel'
               onClick={() => setInfoPanelOpen(!infoPanelOpen)}
             >
-              <Info className='h-6 w-6' />
+              <Info className='w-6 h-6' />
             </button>
           </Tooltip>
         </div>
@@ -1382,7 +1382,7 @@ export default function App() {
           Canvas interaction is temporarily disabled during onboarding
         </Snackbar>
 
-        <div className='sm:hidden z-20 absolute top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50'>
+        <div className='flex absolute top-0 left-0 z-20 justify-center items-center w-full h-full bg-black bg-opacity-50 sm:hidden'>
           <GenericModal
             imageUrl='/langgraph-logo.png'
             onButtonClick={() => {
@@ -1439,13 +1439,13 @@ export default function App() {
             }}
             open={generateCodeModalOpen}
           >
-            <ModalDialog className='bg-slate-150 hidden sm:block absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2'>
+            <ModalDialog className='hidden absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-slate-150 sm:block'>
               <>
                 <div className='flex flex-col'>
                   {!isLoading && (generatedFiles[configValues.language?.toLowerCase() as 'python' | 'typescript']?.stub || generatedFiles[configValues.language?.toLowerCase() as 'python' | 'typescript']?.implementation) && (
                     <div className='flex flex-row justify-between items-center'>
-                      <div className='flex items-center gap-3'>
-                        <h2 className='md:text-lg font-medium'>Generated Code:</h2>
+                      <div className='flex gap-3 items-center'>
+                        <h2 className='font-medium md:text-lg'>Generated Code:</h2>
                         
                         {/* Template selection dropdown - only show for non-spec files */}
                         {activeFile !== 'spec' && availableTemplates[configValues.language] && availableTemplates[configValues.language][activeFile] && (
@@ -1465,22 +1465,22 @@ export default function App() {
                           </div>
                         )}
                       </div>
-                      <div className='flex py-3 md:py-0 flex-row gap-2'>
+                      <div className='flex flex-row gap-2 py-3 md:py-0'>
                         <button
                           onClick={() => downloadAsZip(generatedFiles, generatedYamlSpec, configValues.language || 'python')}
-                          className='px-3 rounded-t-md bg-white rounded-b-md border border-gray-300 hover:bg-gray-50'
+                          className='px-3 bg-white rounded-t-md rounded-b-md border border-gray-300 hover:bg-gray-50'
                           title='Download as ZIP'
                         >
                           <Download size={18} />
                         </button>
-                        <div className='max-w-xs pr-3'>
+                        <div className='pr-3 max-w-xs'>
                           <MultiButton 
                             onSelectionChange={(option) => handleLanguageChange(option)}
                             initialSelection={configValues.language === 'typescript' ? 'TypeScript' : 'Python'}
                           />
                         </div>
                         <button
-                          className='font-bold pr-3 text-gray-400 hover:text-gray-600 transition-colors duration-300 ease-in-out'
+                          className='pr-3 font-bold text-gray-400 transition-colors duration-300 ease-in-out hover:text-gray-600'
                           onClick={() => {
                             setGenerateCodeModalOpen(false)
                           }}
@@ -1582,7 +1582,7 @@ export default function App() {
                           }
                         </div>
                         <div className='relative bg-gray-100 overflow-hidden h-[calc(80vh-30px)]'>
-                          <div className='absolute top-5 right-6 z-10 flex gap-2'>
+                          <div className='flex absolute top-5 right-6 z-10 gap-2'>
                             <button
                               onClick={() => downloadFile(activeCode, activeFile === 'spec' ? 'spec.yml' : `${activeFile}${fileExtension}`)}
                               className='p-1 bg-white rounded border border-gray-300 hover:bg-gray-50'
@@ -1604,7 +1604,7 @@ export default function App() {
                             language={activeFile === 'spec' ? 'yaml' : configValues.language === 'python' ? 'python' : 'typescript'}
                           >
                             {({ style, tokens, getLineProps, getTokenProps }) => (
-                              <pre className='p-3 overflow-auto h-full max-h-full' style={{ ...style, height: '100%' }}>
+                              <pre className='overflow-auto p-3 h-full max-h-full' style={{ ...style, height: '100%' }}>
                                 {tokens.map((line, i) => (
                                   <div key={i} {...getLineProps({ line })}>
                                     {line.map((token, key) => (
@@ -1619,7 +1619,7 @@ export default function App() {
                       </div>
                     ) : (
                       <div className='mt-3 md:w-[50vw] md:h-[80vh] flex items-center justify-center'>
-                        <div className='flex flex-col items-center gap-4'>
+                        <div className='flex flex-col gap-4 items-center'>
                           <div className='flex'>
                             <LoadingSpinner />
                           </div>
