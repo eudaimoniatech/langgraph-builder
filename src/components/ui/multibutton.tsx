@@ -5,17 +5,18 @@ import React, { useState } from 'react'
 interface MultiButtonProps {
   options?: string[]
   onSelectionChange?: (option: string, index: number) => void
-  lang?: string
+  initialSelection?: string
 }
 
-const MultiButton = ({ options = ['Python', 'Typescript'], onSelectionChange, lang }: MultiButtonProps) => {
-  const [selectedOption, setSelectedOption] = useState( () => { 
-    if( lang  ) {
-      const index = options.findIndex( o =>  o.toLowerCase()===lang.toLowerCase() );
-      return index>=0 ? index : 0;
-    } 
-    return 0;
-})
+const MultiButton = ({ 
+  options = ['Python', 'Typescript'], 
+  onSelectionChange,
+  initialSelection
+}: MultiButtonProps) => {
+  const initialIndex = initialSelection 
+    ? options.findIndex(opt => opt.toLowerCase() === initialSelection.toLowerCase())
+    : 0;
+  const [selectedOption, setSelectedOption] = useState(initialIndex !== -1 ? initialIndex : 0)
 
   const handleOptionClick = (index: number) => {
     setSelectedOption(index)
