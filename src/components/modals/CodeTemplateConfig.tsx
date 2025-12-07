@@ -28,6 +28,9 @@ type CodeTemplateConfigProps = {
     output: string;
     implementation: string;
     language: 'python' | 'typescript';
+    prompts: string;
+    pipeline: string;
+    tools: string;
   };
   customTemplates: {[key: string]: string};
   isLoadingTemplates: boolean;
@@ -190,21 +193,23 @@ export default function CodeTemplateConfig({
     const currentLang = language;
     const types = new Set<string>();
     
+    console.log(availableTemplates[currentLang]);
     // If API call failed, provide default template types
     if (templateError || Object.keys(availableTemplates[currentLang] || {}).length === 0) {
-      return ['stub', 'implementation'];
+      console.warn('Using default template types');
+      return ['stub', 'implementation', 'prompts', 'pipeline', 'tools', 'state', 'config', 'graph'];
     }
-    
+    console.log(availableTemplates[currentLang]);
     if (availableTemplates[currentLang]) {
       Object.keys(availableTemplates[currentLang]).forEach(type => {
         types.add(type);
       });
     }
-    
+    console.log(types);
     // Sort types in the specific order
     const result = Array.from(types);
-    const orderedTemplateTypes = ['graph', 'stub', 'implementation'];
-    
+    const orderedTemplateTypes = ['graph', 'stub', 'implementation', 'prompts', 'pipeline', 'tools', 'state', 'config'];
+    console.log(result);
     return [
       ...orderedTemplateTypes.filter(type => result.includes(type)),
       ...result.filter(type => !orderedTemplateTypes.includes(type))
@@ -286,7 +291,7 @@ export default function CodeTemplateConfig({
           <option value="python">Python</option>
           <option value="typescript">TypeScript</option>
         </select>
-        <p className="text-xs text-gray-500 mt-1">
+        <p className="mt-1 text-xs text-gray-500">
           Changing the language will fetch new code when you generate again
         </p>
       </div>
@@ -313,6 +318,7 @@ export default function CodeTemplateConfig({
                 >
                   <option value="">Select a type</option>
                   {getTemplateTypes().map(type => (
+                    console.log("Select a type", type),
                     <option key={type} value={type}>
                       {type}{disabledTemplates.includes(type) ? ' (Disabled)' : ''}
                     </option>
@@ -342,7 +348,7 @@ export default function CodeTemplateConfig({
             </div>
             
             {templateError && (
-              <div className="mt-2 text-sm text-amber-700 bg-amber-50 p-3 rounded-md border border-amber-200">
+              <div className="p-3 mt-2 text-sm text-amber-700 bg-amber-50 rounded-md border border-amber-200">
                 <p>
                   <strong>Note:</strong> Custom templates couldn't be loaded. 
                   Only Default and Disabled options are available.
@@ -357,14 +363,14 @@ export default function CodeTemplateConfig({
                   Template Preview: {selectedTemplateType}{fileExtension}
                   {selectedTemplate === 'default' ? ' (Default)' : ` (${selectedTemplate})`}
                 </label>
-                <div className='mt-1 border border-gray-300 rounded-md overflow-hidden'>
+                <div className='overflow-hidden mt-1 rounded-md border border-gray-300'>
                   <Highlight
                     theme={themes.nightOwl}
                     code={templatePreview}
                     language={language === 'python' ? 'python' : 'typescript'}
                   >
                     {({ style, tokens, getLineProps, getTokenProps }) => (
-                      <pre className='p-3 overflow-auto max-h-72' style={{ ...style }}>
+                      <pre className='overflow-auto p-3 max-h-72' style={{ ...style }}>
                         {tokens.map((line, i) => (
                           <div key={i} {...getLineProps({ line })}>
                             {line.map((token, key) => (
@@ -386,7 +392,7 @@ export default function CodeTemplateConfig({
                 <div className="flex flex-wrap gap-2 mt-1">
                   {Object.entries(selectedTemplates).map(([type, template]) => (
                     template !== 'default' && template !== 'disabled' && (
-                      <div key={type} className="bg-gray-100 rounded-full px-3 py-1 text-xs flex items-center gap-1">
+                      <div key={type} className="flex gap-1 items-center px-3 py-1 text-xs bg-gray-100 rounded-full">
                         <span>{type}: {template}</span>
                         <button 
                           onClick={() => {
@@ -405,7 +411,7 @@ export default function CodeTemplateConfig({
                     )
                   ))}
                   {disabledTemplates.map((type) => (
-                    <div key={type} className="bg-red-50 text-red-700 rounded-full px-3 py-1 text-xs flex items-center gap-1">
+                    <div key={type} className="flex gap-1 items-center px-3 py-1 text-xs text-red-700 bg-red-50 rounded-full">
                       <span>{type}: Disabled</span>
                       <button 
                         onClick={() => {
@@ -427,7 +433,7 @@ export default function CodeTemplateConfig({
         )}
       </div>
       
-      <div className='bg-gray-50 p-3 rounded-md border border-gray-200'>
+      <div className='p-3 bg-gray-50 rounded-md border border-gray-200'>
         <p className='text-xs text-gray-600'>
           Select a template type and choose "Disabled" to skip generating that file type.
           Select a custom template to use a specific template for that file type.
@@ -436,10 +442,10 @@ export default function CodeTemplateConfig({
         </p>
       </div>
       
-      <div className='flex justify-end gap-2 mt-4'>
+      <div className='flex gap-2 justify-end mt-4'>
         <button
           onClick={handleReset}
-          className='px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors'
+          className='px-4 py-2 text-gray-700 bg-gray-100 rounded-md transition-colors hover:bg-gray-200'
         >
           Reset
         </button>

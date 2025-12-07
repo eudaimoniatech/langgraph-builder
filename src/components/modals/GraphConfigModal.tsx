@@ -10,6 +10,9 @@ type GraphConfigModalProps = {
     input: string;
     output: string;
     implementation: string;
+    prompts?: string;
+    pipeline?: string;
+    tools?: string;
   };
   onSave: (configValues: any) => void;
 }
@@ -36,7 +39,10 @@ export default function GraphConfigModal({ configValues, onSave }: GraphConfigMo
       state: 'state.State',
       input: 'state.InputState',
       output: 'Any',
-      implementation: 'implementation.IMPLEMENTATION'
+      implementation: 'implementation.IMPLEMENTATION',
+      prompts: 'prompts.Prompts',
+      pipeline: 'pipeline.Pipeline',
+      tools: 'tools.Tools'
     })
   }
 
@@ -56,10 +62,10 @@ export default function GraphConfigModal({ configValues, onSave }: GraphConfigMo
           />
         </div>
       ))}
-      <div className='flex justify-end gap-2 mt-4'>
+      <div className='flex gap-2 justify-end mt-4'>
         <button
           onClick={handleReset}
-          className='px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors'
+          className='px-4 py-2 text-gray-700 bg-gray-100 rounded-md transition-colors hover:bg-gray-200'
         >
           Reset
         </button>

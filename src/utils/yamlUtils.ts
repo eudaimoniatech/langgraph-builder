@@ -23,6 +23,9 @@ export type YamlConfig = {
   output: string;
   implementation: string;
   language?: 'python' | 'typescript';
+  prompts?: string;
+  pipeline?: string;
+  tools?: string;
   nodes: YamlNode[];
   edges: YamlEdge[];
 }

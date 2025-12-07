@@ -25,6 +25,9 @@ export interface GeneratedFiles {
     graph?: string;
     state?: string;
     config?: string;
+    prompts?: string;
+    pipeline?: string;
+    tools?: string;
   }
   typescript?: { 
     stub?: string; 
@@ -32,6 +35,9 @@ export interface GeneratedFiles {
     graph?: string;
     state?: string;
     config?: string;
+    prompts?: string;
+    pipeline?: string;
+    tools?: string;
   }
 }
 
@@ -61,6 +67,15 @@ export const downloadAsZip = (generatedFiles: GeneratedFiles, generatedYamlSpec:
     if (generatedFiles.python?.config) {
       zip.file('config.py', generatedFiles.python.config)
     }
+    if (generatedFiles.python?.prompts) {
+      zip.file('prompts.py', generatedFiles.python.prompts)
+    }
+    if (generatedFiles.python?.pipeline) {
+      zip.file('pipeline.py', generatedFiles.python.pipeline)
+    }
+    if (generatedFiles.python?.tools) {
+      zip.file('tools.py', generatedFiles.python.tools)
+    }
   } else {
     if (generatedFiles.typescript?.stub) {
       zip.file('stub.ts', generatedFiles.typescript.stub)
@@ -77,6 +92,15 @@ export const downloadAsZip = (generatedFiles: GeneratedFiles, generatedYamlSpec:
     if (generatedFiles.typescript?.config) {
       zip.file('config.ts', generatedFiles.typescript.config)
     }
+    if (generatedFiles.typescript?.prompts) {
+      zip.file('prompts.ts', generatedFiles.typescript.prompts)
+    }
+    if (generatedFiles.typescript?.pipeline) {
+      zip.file('pipeline.ts', generatedFiles.typescript.pipeline)
+    }
+    if (generatedFiles.typescript?.tools) {
+      zip.file('tools.ts', generatedFiles.typescript.tools)
+    }
   }
 
   // Generate and download the zip
@@ -84,7 +108,7 @@ export const downloadAsZip = (generatedFiles: GeneratedFiles, generatedYamlSpec:
     const url = window.URL.createObjectURL(content)
     const link = document.createElement('a')
     link.href = url
-    link.download = 'langgraph-agent.zip'
+    link.download = `langgraph-agent-${new Date().toISOString()}.zip`
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)

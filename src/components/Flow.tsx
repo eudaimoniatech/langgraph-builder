@@ -69,7 +69,7 @@ export default function App() {
   const [maxEdgeLength, setMaxEdgeLength] = useState(0)
   const [conditionalGroupCount, setConditionalGroupCount] = useState(0)
   const { edgeLabels, updateEdgeLabel } = useEdgeLabel()
-  const [activeFile, setActiveFile] = useState<'stub' | 'implementation' | 'spec' | 'graph' | 'state' | 'config'>('stub')
+  const [activeFile, setActiveFile] = useState<'stub' | 'implementation' | 'spec' | 'graph' | 'state' | 'config' | 'prompts' | 'pipeline' | 'tools'>('stub')
   const [generatedFiles, setGeneratedFiles] = useState<GeneratedFiles>({})
   const [initialOnboardingComplete, setInitialOnboardingComplete] = useState<boolean | null>(null)
   const [currentOnboardingStep, setCurrentOnboardingStep] = useState(0)
@@ -92,7 +92,10 @@ export default function App() {
     input: 'state.InputState',
     output: 'Any',
     implementation: 'implementation.IMPLEMENTATION',
-    language: 'python' as 'python' | 'typescript'
+    language: 'python' as 'python' | 'typescript',
+    prompts: 'prompts.Prompts',
+    pipeline: 'pipeline.Pipeline',
+    tools: 'tools.Tools'
   })
   const [skipTemplates, setSkipTemplates] = useState<string[]>([])
   const [availableTemplates, setAvailableTemplates] = useState<AvailableTemplates>({
@@ -153,7 +156,10 @@ export default function App() {
             state: parsedConfig.state || prev.state,
             input: parsedConfig.input || prev.input,
             output: parsedConfig.output || prev.output,
-            implementation: parsedConfig.implementation || prev.implementation
+            implementation: parsedConfig.implementation || prev.implementation,
+            prompts: parsedConfig.prompts || prev.prompts,
+            pipeline: parsedConfig.pipeline || prev.pipeline,
+            tools: parsedConfig.tools || prev.tools
           }));
         } catch (e) {
           console.error('Error parsing saved graph config:', e);
@@ -302,7 +308,8 @@ export default function App() {
   }, [nodes, edges, configValues, initialOnboardingComplete])
 
   useEffect(() => {
-    const initialComplete = localStorage.getItem('initialOnboardingComplete')
+    // const initialComplete = localStorage.getItem('initialOnboardingComplete')
+    const initialComplete = 'true'
     setInitialOnboardingComplete(initialComplete === 'true' ? true : false)
     
     // Load saved graph from localStorage if onboarding is complete
@@ -329,7 +336,10 @@ export default function App() {
                 state: parsed.state || configValues.state,
                 input: parsed.input || configValues.input,
                 output: parsed.output || configValues.output,
-                implementation: parsed.implementation || configValues.implementation
+                implementation: parsed.implementation || configValues.implementation,
+                prompts: parsed.prompts || configValues.prompts,
+                pipeline: parsed.pipeline || configValues.pipeline,
+                tools: parsed.tools || configValues.tools
               };
               
               if (parsed.language && (parsed.language === 'python' || parsed.language === 'typescript')) {
@@ -347,7 +357,10 @@ export default function App() {
                 state: newConfig.state,
                 input: newConfig.input,
                 output: newConfig.output,
-                implementation: newConfig.implementation
+                implementation: newConfig.implementation,
+                prompts: newConfig.prompts,
+                pipeline: newConfig.pipeline,
+                tools: newConfig.tools
               }));
               
               if (parsed.language && (parsed.language === 'python' || parsed.language === 'typescript')) {
@@ -706,7 +719,7 @@ export default function App() {
         setActiveFile('spec');
       } else {
         // Check each file type in the specified order and select the first one with content
-        const orderedFileTypes = ['graph', 'stub', 'implementation', 'state', 'config'] as const;
+        const orderedFileTypes = ['graph', 'stub', 'implementation', 'state', 'config', 'prompts', 'pipeline', 'tools'] as const;
         for (const fileType of orderedFileTypes) {
           if (generatedFiles[newLanguage]?.[fileType]) {
             setActiveFile(fileType);
@@ -762,6 +775,9 @@ export default function App() {
             graph: data.graph,
             state: data.state,
             config: data.config,
+            prompts: data.prompts,
+            pipeline: data.pipeline,
+            tools: data.tools
           }
         }));
       } else {
@@ -773,6 +789,9 @@ export default function App() {
             graph: data.graph,
             state: data.state,
             config: data.config,
+            prompts: data.prompts,
+            pipeline: data.pipeline,
+            tools: data.tools
           }
         });
       }
@@ -782,7 +801,7 @@ export default function App() {
         setActiveFile('spec');
       } else {
         // Check each file type in the specified order and select the first one with content
-        const orderedFileTypes = ['graph', 'stub', 'implementation', 'state', 'config'] as const;
+        const orderedFileTypes = ['graph', 'stub', 'implementation', 'state', 'config', 'prompts', 'pipeline', 'tools'] as const;
         for (const fileType of orderedFileTypes) {
           if (data[fileType]) {
             setActiveFile(fileType);
@@ -859,6 +878,9 @@ export default function App() {
           graph: data.graph,
           state: data.state,
           config: data.config,
+          prompts: data.prompts,
+          pipeline: data.pipeline,
+          tools: data.tools
         }
       }));
       
@@ -905,6 +927,9 @@ export default function App() {
     input: string;
     output: string;
     implementation: string;
+    prompts: string;
+    pipeline: string;
+    tools: string;
   }) => {
     setConfigValues(prev => ({
       ...prev,
@@ -973,7 +998,10 @@ export default function App() {
                   input: parsed.input || 'state.InputState',
                   output: parsed.output || 'Any',
                   implementation: parsed.implementation || 'implementation.IMPLEMENTATION',
-                  language: parsed.language || configValues.language
+                  language: parsed.language || configValues.language,
+                  prompts: parsed.prompts || 'prompts.Prompts',
+                  pipeline: parsed.pipeline || 'pipeline.Pipeline',
+                  tools: parsed.tools || 'tools.Tools'
                 };
 
                 // Save to localStorage
@@ -985,7 +1013,10 @@ export default function App() {
                   state: newConfig.state,
                   input: newConfig.input,
                   output: newConfig.output,
-                  implementation: newConfig.implementation
+                  implementation: newConfig.implementation,
+                  prompts: newConfig.prompts,
+                  pipeline: newConfig.pipeline,
+                  tools: newConfig.tools
                 }));
                 
                 if (parsed.language && (parsed.language === 'python' || parsed.language === 'typescript') && 
@@ -1459,6 +1490,7 @@ export default function App() {
                               {!templateError && 
                                availableTemplates[configValues.language][activeFile]?.names?.length > 0 && 
                                availableTemplates[configValues.language][activeFile].names.map(template => (
+                                console.log("Template", template),
                                 <option key={template} value={template}>{template}</option>
                               ))}
                             </select>
@@ -1561,6 +1593,39 @@ export default function App() {
                             </button>
                           )}
                           
+                          {/* prompts tab */} 
+                          {generatedFiles[configValues.language?.toLowerCase() as 'python' | 'typescript']?.prompts && (
+                            <button
+                              key="prompts"
+                              className={`px-3 rounded-t-md ${activeFile === 'prompts' ? 'bg-[#246161] text-white' : 'bg-gray-200'}`}
+                              onClick={() => setActiveFile('prompts')}
+                            >
+                              {`prompts${fileExtension}`}
+                            </button>
+                          )}
+                          
+                          {/* pipeline tab */}
+                          {generatedFiles[configValues.language?.toLowerCase() as 'python' | 'typescript']?.pipeline && (
+                            <button
+                              key="pipeline"
+                              className={`px-3 rounded-t-md ${activeFile === 'pipeline' ? 'bg-[#246161] text-white' : 'bg-gray-200'}`}
+                              onClick={() => setActiveFile('pipeline')}
+                            >
+                              {`pipeline${fileExtension}`}
+                            </button>
+                          )}
+                          
+                          {/* tools tab */}
+                          {generatedFiles[configValues.language?.toLowerCase() as 'python' | 'typescript']?.tools && (
+                            <button
+                              key="tools"
+                              className={`px-3 rounded-t-md ${activeFile === 'tools' ? 'bg-[#246161] text-white' : 'bg-gray-200'}`}
+                              onClick={() => setActiveFile('tools')}
+                            >
+                              {`tools${fileExtension}`}
+                            </button>
+                          )}
+                          
                           {/* Any other file types not explicitly handled above */}
                           {Object.keys(generatedFiles[configValues.language?.toLowerCase() as 'python' | 'typescript'] || {})
                             .filter(fileType => 
@@ -1569,7 +1634,11 @@ export default function App() {
                               fileType !== 'stub' && 
                               fileType !== 'implementation' && 
                               fileType !== 'state' && 
-                              fileType !== 'config')
+                              fileType !== 'config' && 
+                              fileType !== 'prompts' && 
+                              fileType !== 'pipeline' && 
+                              fileType !== 'tools'
+                            )
                             .map(fileType => (
                               <button
                                 key={fileType}
@@ -1702,7 +1771,10 @@ export default function App() {
             state: configValues.state,
             input: configValues.input,
             output: configValues.output,
-            implementation: configValues.implementation
+            implementation: configValues.implementation,
+            prompts: configValues.prompts,
+            pipeline: configValues.pipeline,
+            tools: configValues.tools
           }}
           onSave={(newGraphConfigValues) => {
             updateGraphConfig(newGraphConfigValues);

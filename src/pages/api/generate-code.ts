@@ -4,7 +4,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 type FileContent = string;
 
 // Type for all possible template types
-type TemplateType = 'graph' | 'implementation' | 'state' | 'config' | 'stub' | string;
+type TemplateType = 'graph' | 'implementation' | 'state' | 'config' | 'stub' | 'prompts' | 'pipeline' | 'tools' | string;
 
 // Updated GenerateResponse to include all possible files
 type GenerateResponse = {
@@ -14,6 +14,9 @@ type GenerateResponse = {
   graph?: string;
   state?: string;
   config?: string;
+  prompts?: string;
+  pipeline?: string;
+  tools?: string;
   error?: string;
 }
 
@@ -70,6 +73,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       graph: data.files?.graph,
       state: data.files?.state,
       config: data.files?.config,
+      prompts: data.files?.prompts,
+      pipeline: data.files?.pipeline,
+      tools: data.files?.tools,
     });
   } catch (error) {
     console.error('Error generating code:', error)
